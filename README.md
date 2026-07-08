@@ -81,8 +81,7 @@ arm_workspace/
 │       ├── images/
 │       │   ├── gazebo_overview.png
 │       │   ├── moveit_planning.png
-│       │   ├── pose_goal_demo.png
-│       │   └── trajectory_tracking_demo.png
+│       │   └── pose_goal_demo.png
 │       └── videos/
 │           ├── arm_demo.mp4
 │           └── arm_demo_preview.gif
@@ -326,15 +325,10 @@ arm:
 | [gazebo_overview.png](docs/media/images/gazebo_overview.png) | Gazebo + RViz 整体运行画面 |
 | [moveit_planning.png](docs/media/images/moveit_planning.png) | RViz / MoveIt2 MotionPlanning 界面 |
 | [pose_goal_demo.png](docs/media/images/pose_goal_demo.png) | 单个目标位姿执行后的画面 |
-| [trajectory_tracking_demo.png](docs/media/images/trajectory_tracking_demo.png) | 末端跟踪 demo 运行画面 |
 
 Gazebo / MoveIt 总览：
 
 ![Gazebo overview](docs/media/images/gazebo_overview.png)
-
-末端跟踪 demo：
-
-![Trajectory tracking demo](docs/media/images/trajectory_tracking_demo.png)
 
 ### 视频
 
@@ -342,7 +336,7 @@ Gazebo / MoveIt 总览：
 
 | 文件 | 内容 |
 | --- | --- |
-| [arm_demo.mp4](docs/media/videos/arm_demo.mp4) | 45 秒演示视频 |
+| [arm_demo.mp4](docs/media/videos/arm_demo.mp4) | 约 18 秒演示视频 |
 | [arm_demo_preview.gif](docs/media/videos/arm_demo_preview.gif) | 12 秒 README 预览动图 |
 
 预览：
