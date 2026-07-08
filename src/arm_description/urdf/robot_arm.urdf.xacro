@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="realistic_arm">
+
+  <xacro:arg name="ros2_control_config" default="$(find arm_description)/config/ros2_controllers.yaml"/>
+
+  <!-- COLORS -->
+  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1"/></material>
+  <material name="dark_blue"><color rgba="0.1 0.2 0.4 1"/></material>
+  <material name="light_grey"><color rgba="0.7 0.7 0.7 1"/></material>
+  <material name="bright_green"><color rgba="0.0 0.8 0.0 1"/></material>
+
+  <!-- INERTIA MACROS -->
+  <xacro:macro name="box_inertia" params="mass x y z">
+    <inertia ixx="${mass*(y*y+z*z)/12}" iyy="${mass*(x*x+z*z)/12}" izz="${mass*(x*x+y*y)/12}" ixy="0" ixz="0" iyz="0"/>
+  </xacro:macro>
+  
+  <xacro:macro name="cylinder_inertia" params="mass radius length">
+    <inertia ixx="${mass*(3*radius*radius+length*length)/12}" iyy="${mass*(3*radius*radius+length*length)/12}" izz="${mass*radius*radius/2}" ixy="0" ixz="0" iyz="0"/>
+  </xacro:macro>
+
+  <xacro:macro name="gazebo_no_gravity" params="link">
+    <gazebo reference="${link}">
+      <gravity>false</gravity>
+      <self_collide>false</self_collide>
+    </gazebo>
+  </xacro:macro>
+
+  <!-- WORLD & BASE -->
+  <link name="world"/>
+  <joint name="world_joint" type="fixed"><parent link="world"/><child link="base_link"/></joint>
+
+  <link name="base_link">
+    <visual>
+      <geometry><cylinder radius="0.12" length="0.12"/></geometry>
+      <origin xyz="0 0 0.06" rpy="0 0 0"/>
+      <material name="dark_grey"/>
+    </visual>
+    <collision><geometry><cylinder radius="0.12" length="0.12"/></geometry><origin xyz="0 0 0.06" rpy="0 0 0"/></collision>
+    <inertial><mass value="10.0"/><origin xyz="0 0 0.06" rpy="0 0 0"/><xacro:cylinder_inertia mass="10.0" radius="0.12" length="0.12"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 1: WAIST ROTATION (Z-AXIS) ============ -->
+  <!-- SAFE LIMITS: -180° to +180° (full rotation, but controlled) -->
+  <joint name="shoulder_pan_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.12" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="150" velocity="1.0"/>
+    <dynamics damping="5.0" friction="1.0"/>
+  </joint>
+
+  <link name="shoulder_link">
+    <visual>
+      <geometry><cylinder radius="0.08" length="0.15"/></geometry>
+      <origin xyz="0 0 0.075" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <visual>
+      <geometry><cylinder radius="0.065" length="0.05"/></geometry>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <material name="bright_green"/>
+    </visual>
+    <collision><geometry><cylinder radius="0.08" length="0.15"/></geometry><origin xyz="0 0 0.075" rpy="0 0 0"/></collision>
+    <inertial><mass value="4.0"/><origin xyz="0 0 0.075" rpy="0 0 0"/><xacro:cylinder_inertia mass="4.0" radius="0.08" length="0.15"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 2: SHOULDER LIFT (Y-AXIS) ============ -->
+  <!-- SAFE LIMITS: -90° to +90° (up and down, but not backwards) -->
+  <joint name="shoulder_lift_joint" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="upper_arm_link"/>
+    <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="150" velocity="0.8"/>
+    <dynamics damping="8.0" friction="1.5"/>
+  </joint>
+
+  <link name="upper_arm_link">
+    <visual>
+      <geometry><box size="0.09 0.09 0.65"/></geometry>
+      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+      <material name="light_grey"/>
+    </visual>
+    <visual>
+      <geometry><cylinder radius="0.06" length="0.07"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <visual>
+      <geometry><cylinder radius="0.06" length="0.07"/></geometry>
+      <origin xyz="0 0 0.65" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <collision><geometry><box size="0.09 0.09 0.65"/></geometry><origin xyz="0 0 0.325" rpy="0 0 0"/></collision>
+    <inertial><mass value="3.5"/><origin xyz="0 0 0.325" rpy="0 0 0"/><xacro:box_inertia mass="3.5" x="0.09" y="0.09" z="0.65"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 3: ELBOW (Y-AXIS) ============ -->
+  <!-- SAFE LIMITS: -90° to +90° (flexion/extension only) -->
+  <joint name="elbow_joint" type="revolute">
+    <parent link="upper_arm_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="0 0 0.65" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="100" velocity="0.8"/>
+    <dynamics damping="8.0" friction="1.5"/>
+  </joint>
+
+  <link name="forearm_link">
+    <visual>
+      <geometry><box size="0.08 0.08 0.55"/></geometry>
+      <origin xyz="0 0 0.275" rpy="0 0 0"/>
+      <material name="light_grey"/>
+    </visual>
+    <visual>
+      <geometry><cylinder radius="0.055" length="0.06"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <visual>
+      <geometry><cylinder radius="0.055" length="0.06"/></geometry>
+      <origin xyz="0 0 0.55" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <collision><geometry><box size="0.08 0.08 0.55"/></geometry><origin xyz="0 0 0.275" rpy="0 0 0"/></collision>
+    <inertial><mass value="2.5"/><origin xyz="0 0 0.275" rpy="0 0 0"/><xacro:box_inertia mass="2.5" x="0.08" y="0.08" z="0.55"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 4: WRIST 1 ROTATION (Z-AXIS) ============ -->
+  <!-- SAFE LIMITS: -180° to +180° (full twist) -->
+  <joint name="wrist_1_joint" type="revolute">
+    <parent link="forearm_link"/>
+    <child link="wrist_1_link"/>
+    <origin xyz="0 0 0.55" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="75" velocity="1.5"/>
+    <dynamics damping="4.0" friction="0.8"/>
+  </joint>
+
+  <link name="wrist_1_link">
+    <visual>
+      <geometry><cylinder radius="0.05" length="0.1"/></geometry>
+      <origin xyz="0 0 0.05" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <visual>
+      <geometry><sphere radius="0.045"/></geometry>
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <material name="bright_green"/>
+    </visual>
+    <collision><geometry><cylinder radius="0.05" length="0.1"/></geometry><origin xyz="0 0 0.05" rpy="0 0 0"/></collision>
+    <inertial><mass value="1.5"/><origin xyz="0 0 0.05" rpy="0 0 0"/><xacro:cylinder_inertia mass="1.5" radius="0.05" length="0.1"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 5: WRIST 2 TILT (Y-AXIS) ============ -->
+  <!-- SAFE LIMITS: -90° to +90° (tool tilt) -->
+  <joint name="wrist_2_joint" type="revolute">
+    <parent link="wrist_1_link"/>
+    <child link="wrist_2_link"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="50" velocity="1.5"/>
+    <dynamics damping="4.0" friction="0.8"/>
+  </joint>
+
+  <link name="wrist_2_link">
+    <visual>
+      <geometry><box size="0.06 0.06 0.25"/></geometry>
+      <origin xyz="0 0 0.125" rpy="0 0 0"/>
+      <material name="light_grey"/>
+    </visual>
+    <visual>
+      <geometry><sphere radius="0.04"/></geometry>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <visual>
+      <geometry><sphere radius="0.04"/></geometry>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <collision><geometry><box size="0.06 0.06 0.25"/></geometry><origin xyz="0 0 0.125" rpy="0 0 0"/></collision>
+    <inertial><mass value="1.0"/><origin xyz="0 0 0.125" rpy="0 0 0"/><xacro:box_inertia mass="1.0" x="0.06" y="0.06" z="0.25"/></inertial>
+  </link>
+
+  <!-- ============ JOINT 6: WRIST 3 ROTATION (Z-AXIS) ============ -->
+  <!-- SAFE LIMITS: -180° to +180° (end-effector twist) -->
+  <joint name="wrist_3_joint" type="revolute">
+    <parent link="wrist_2_link"/>
+    <child link="tool_link"/>
+    <origin xyz="0 0 0.25" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="${-3.14159}" upper="${3.14159}" effort="40" velocity="2.0"/>
+    <dynamics damping="3.0" friction="0.6"/>
+  </joint>
+
+  <link name="tool_link">
+    <visual>
+      <geometry><cylinder radius="0.035" length="0.08"/></geometry>
+      <origin xyz="0 0 0.04" rpy="0 0 0"/>
+      <material name="bright_green"/>
+    </visual>
+    <visual>
+      <geometry><sphere radius="0.04"/></geometry>
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <material name="dark_blue"/>
+    </visual>
+    <collision><geometry><cylinder radius="0.035" length="0.08"/></geometry><origin xyz="0 0 0.04" rpy="0 0 0"/></collision>
+    <inertial><mass value="0.5"/><origin xyz="0 0 0.04" rpy="0 0 0"/><xacro:cylinder_inertia mass="0.5" radius="0.035" length="0.08"/></inertial>
+  </link>
+
+  <xacro:gazebo_no_gravity link="base_link"/>
+  <xacro:gazebo_no_gravity link="shoulder_link"/>
+  <xacro:gazebo_no_gravity link="upper_arm_link"/>
+  <xacro:gazebo_no_gravity link="forearm_link"/>
+  <xacro:gazebo_no_gravity link="wrist_1_link"/>
+  <xacro:gazebo_no_gravity link="wrist_2_link"/>
+  <xacro:gazebo_no_gravity link="tool_link"/>
+
+  <ros2_control name="GazeboSystem" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+    <joint name="shoulder_pan_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-250</param>
+        <param name="max">250</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="shoulder_lift_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-300</param>
+        <param name="max">300</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="elbow_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-250</param>
+        <param name="max">250</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="wrist_1_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-120</param>
+        <param name="max">120</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="wrist_2_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-120</param>
+        <param name="max">120</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+    <joint name="wrist_3_joint">
+      <command_interface name="position">
+        <param name="min">-3.14159</param>
+        <param name="max">3.14159</param>
+      </command_interface>
+      <command_interface name="effort">
+        <param name="min">-80</param>
+        <param name="max">80</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(arg ros2_control_config)</parameters>
+      <position_proportional_gain>3.0</position_proportional_gain>
+    </plugin>
+  </gazebo>
+
+</robot>

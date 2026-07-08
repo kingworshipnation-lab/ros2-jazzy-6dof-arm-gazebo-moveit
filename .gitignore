@@ -1,0 +1,43 @@
+# ROS 2 / colcon generated files
+build/
+install/
+log/
+
+# Python cache and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# CMake / compiler outputs
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+*.o
+*.so
+*.a
+
+# IDE and editor state
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# ROS runtime logs and bags
+*.bag
+*.db3
+*.mcap
+rosbag2_*/
+
+# Large ad-hoc recordings can be kept outside git unless intentionally curated.
+*.mkv
+*.avi

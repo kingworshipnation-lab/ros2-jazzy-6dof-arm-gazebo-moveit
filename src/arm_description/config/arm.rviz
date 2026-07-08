@@ -1,0 +1,73 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_common/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.03
+        Value: Lines
+      Name: Grid
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz_common/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz_common/TF
+      Enabled: true
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Update Interval: 0
+      Value: true
+
+View_Panels:
+  Current View:
+    Class: rviz_common/Orbit
+    Distance: 3.5
+    Enable Stereo Rendering:
+      Stereo Eye Separation: 0.06
+      Stereo Focal Distance: 1
+      Swap Stereo Eyes: false
+      Value: false
+    Focal Point:
+      X: 0
+      Y: 0
+      Z: 0
+    Invert Z Axis: false
+    Name: Current View
+    Near Clip Distance: 0.01
+    Pitch: 0.5
+    Target Frame: base_link
+    Value: Orbit (rviz)
+    Yaw: 0.5
+
+Window Geometry:
+  Displays:
+    collapsed: false
+    height: 846
+    width: 1400
+  Height: 1080
+  Hide Left Dock: false
+  Hide Right Dock: false
