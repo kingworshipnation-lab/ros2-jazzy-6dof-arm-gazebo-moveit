@@ -9,7 +9,6 @@
 | 项目 | 内容 |
 | --- | --- |
 | 作者 / 维护者 | Brant |
-| GitHub 仓库 | `kingworshipnation-lab/ROS2-` |
 | 许可证 | MIT License |
 | 项目定位 | ROS2 Jazzy 机械臂仿真、MoveIt2 规划与末端位姿跟踪集成项目 |
 
@@ -350,30 +349,6 @@ Gazebo / MoveIt 总览：
 
 ![Arm demo preview](docs/media/videos/arm_demo_preview.gif)
 
-### 素材生成命令
-
-截图命令：
-
-```bash
-gnome-screenshot -f docs/media/images/gazebo_overview.png
-gnome-screenshot -f docs/media/images/moveit_planning.png
-gnome-screenshot -f docs/media/images/pose_goal_demo.png
-gnome-screenshot -f docs/media/images/trajectory_tracking_demo.png
-```
-
-录屏命令：
-
-```bash
-ffmpeg -y -video_size 2560x1440 -framerate 15 -f x11grab -i :0 \
-  -t 45 -vf scale=1280:-2 -c:v libx264 -preset ultrafast \
-  -pix_fmt yuv420p docs/media/videos/arm_demo.mp4
-
-ffmpeg -y -i docs/media/videos/arm_demo.mp4 \
-  -vf "fps=8,scale=640:-1:flags=lanczos" \
-  -t 12 docs/media/videos/arm_demo_preview.gif
-```
-
-当前素材是在 X11 会话下生成的。如果使用 Wayland，请优先使用系统截图/录屏工具，或切换到 X11 session 后录制。
 
 ## 常见问题与排查
 
@@ -445,15 +420,7 @@ source install/setup.bash
 
 不要删除 `src/`。
 
-## 项目亮点与可扩展方向
-
-亮点：
-
-- 使用 Gazebo Sim Harmonic，不依赖 Gazebo Classic；
-- 机械臂描述、Gazebo 控制和 MoveIt 配置分包清晰；
-- 通过 `gz_ros2_control` 与 `joint_trajectory_controller` 形成标准控制链路；
-- 提供单目标位姿控制与低频连续目标跟踪 demo；
-- README 和 docs 面向复现者组织。
+## 可扩展方向
 
 可扩展方向：
 
@@ -462,26 +429,6 @@ source install/setup.bash
 - 替换为真实机器人尺寸和网格模型；
 - 增加 rosbag / benchmark / 自动化测试；
 - 接入视觉目标检测，将目标位姿由感知模块产生。
-
-## GitHub 发布建议
-
-建议仓库名：
-
-```text
-ros2-jazzy-6dof-arm-gazebo-moveit
-```
-
-建议描述：
-
-```text
-ROS2 Jazzy 6-DOF robotic arm simulation with Gazebo Harmonic, ros2_control and MoveIt2 pose tracking demos.
-```
-
-建议 topics：
-
-```text
-ros2, ros2-jazzy, gazebo, gazebo-harmonic, moveit2, robot-arm, manipulator, ros2-control, inverse-kinematics
-```
 
 ## 致谢与参考资源
 
