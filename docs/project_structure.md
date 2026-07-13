@@ -57,15 +57,3 @@ MoveIt2 配置包。
 | `trajectory_target_publisher` | 按 line/circle/square 低频发布连续目标 |
 | `target_pose_demo` | 固定目标点示例 |
 | `target_pose_planner` | 早期规划测试工具 |
-
-## 不应提交的目录
-
-以下目录由 colcon 或运行过程生成，不应进入 GitHub 仓库：
-
-- `build/`
-- `install/`
-- `log/`
-- `.vscode/`
-- `__pycache__/`
-
-这些规则已写入根目录 `.gitignore`。
